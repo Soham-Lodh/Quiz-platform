@@ -292,10 +292,10 @@ export default function QuizPlatform() {
   if (quizCompleted) {
     if (cheated) {
       return (
-        <div className="h-[calc(100vh-44px)] flex items-center justify-center bg-[#e5e5e5]">
-          <div className="w-[600px] border-4 border-black bg-[#d9d9d9] p-10 text-center shadow-[10px_10px_0px_black]">
-            <h1 className="text-3xl font-bold mb-4">QUIZ TERMINATED</h1>
-            <p className="text-lg">
+        <div className="h-[calc(100vh-44px)] flex items-center justify-center bg-white font-sans">
+          <div className="w-[600px] border-[4px] border-black bg-[#FF6B8B] p-10 text-center shadow-[10px_10px_0px_rgba(0,0,0,1)]">
+            <h1 className="text-3xl font-black mb-4 uppercase text-black tracking-widest">QUIZ TERMINATED</h1>
+            <p className="text-xl font-bold text-black">
               Tab switching detected. You are disqualified.
             </p>
           </div>
@@ -304,10 +304,10 @@ export default function QuizPlatform() {
     }
 
     return (
-      <div className="h-[calc(100vh-44px)] flex items-center justify-center bg-[#e5e5e5]">
-        <div className="w-[600px] border-4 border-black bg-[#d9d9d9] p-10 text-center shadow-[10px_10px_0px_black]">
-          <h1 className="text-3xl font-bold mb-4">QUIZ COMPLETED</h1>
-          <p className="text-lg">Thank you for giving the quiz.</p>
+      <div className="h-[calc(100vh-44px)] flex items-center justify-center bg-white font-sans">
+        <div className="w-[600px] border-[4px] border-black bg-[#00FFA3] p-10 text-center shadow-[10px_10px_0px_rgba(0,0,0,1)]">
+          <h1 className="text-3xl font-black mb-4 uppercase text-black tracking-widest">QUIZ COMPLETED</h1>
+          <p className="text-xl font-bold text-black">Thank you for giving the quiz.</p>
         </div>
       </div>
     );
@@ -315,55 +315,58 @@ export default function QuizPlatform() {
 
   if (questions.length === 0) {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="h-[calc(100vh-44px)] flex items-center justify-center bg-white text-black font-black text-2xl uppercase tracking-widest">
         Loading questions...
       </div>
     );
   }
 
   return (
-    <div className="h-[calc(100vh-44px)] flex items-center justify-center bg-[#e5e5e5]">
-      <div className="w-[900px] border-4 border-black bg-[#d9d9d9] p-10 shadow-[10px_10px_0px_black]">
+    <div className="h-[calc(100vh-44px)] flex items-center justify-center bg-white text-black font-sans">
+      <div className="w-[800px] px-8 py-6">
 
-        <h2 className="font-bold text-lg mb-3">
+        <h2 className="font-black text-xl mb-4 uppercase tracking-widest text-black">
           QUESTION {currentIndex + 1}
         </h2>
 
-        <p className="text-lg mb-6">
+        <p className="text-xl font-medium mb-6 text-black">
           {currentQuestion.questionText}
         </p>
 
+        {/* Options */}
         <div className="space-y-4">
           {currentQuestion.options.map((opt, i) => (
             <div
               key={i}
               onClick={() => setSelected(i)}
-              className={`border-2 border-black p-3 cursor-pointer ${
+              className={`border-[3px] border-black p-4 cursor-pointer text-black font-medium transition-colors duration-150 ${
                 selected === i
-                  ? "bg-lime-400"
-                  : "bg-[#cfcfcf] hover:bg-[#bdbdbd]"
+                  ? "bg-[#00FFA3]" // Neon Green for selected
+                  : "bg-[#e5e5e5] hover:bg-[#d4d4d4]" // Light Grey for unselected
               }`}
             >
-              <span className="font-semibold">Option {i + 1}</span> — {opt}
+              <span className="font-bold mr-2">Option {i + 1}</span> — {opt}
             </div>
           ))}
         </div>
 
-        <div className="mt-8 text-center">
+        {/* Continue Button */}
+        <div className="mt-8 text-center flex justify-center">
           <button
             onClick={handleContinue}
-            className="bg-yellow-400 px-8 py-2 border-2 border-black font-semibold"
+            className="bg-[#FFF000] px-12 py-3 border-[3px] border-black font-black text-lg uppercase tracking-widest shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:bg-[#FFD700] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all"
           >
             {isLastQuestion ? "Submit" : "Continue"}
           </button>
         </div>
 
-        <div className="mt-10 text-center">
-          <div className="bg-black text-white px-6 py-2 inline-block font-bold">
+        {/* Timer Section */}
+        <div className="mt-12 flex flex-col items-center">
+          <div className="bg-black text-white px-6 py-2 inline-block font-bold tracking-widest uppercase text-sm -mb-2 z-10 relative border-2 border-black">
             TIME IS RUNNING OUT!!
           </div>
 
-          <div className="mt-4 bg-purple-600 text-lime-300 text-4xl font-bold px-8 py-3 border-4 border-black inline-block">
+          <div className="bg-[#B517FF] text-[#00FFA3] text-5xl font-black px-10 py-3 border-[4px] border-black inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative z-0">
             {formatTime(timeLeft)}
           </div>
         </div>
