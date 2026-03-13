@@ -4,7 +4,14 @@ import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 
-export default function LoginCard({ bgColour, title, buttonText, buttonColour }) {
+type LoginCardProps = {
+  bgColour: string
+  title: string
+  buttonText: string
+  buttonColour: string
+}
+
+export default function LoginCard({ bgColour, title, buttonText, buttonColour } : LoginCardProps) {
 
   const router = useRouter()
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
