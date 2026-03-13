@@ -60,23 +60,27 @@ export default function QuizGuideLines() {
 
   useEffect(() => {
     checkAccess();
+
+    document.body.style.overflow = "hidden"; // scrool hide kar diya 
+
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, []);
 
   return (
-    <div className="h-[100vh] overflow-hidden bg-[#dcdcdc] flex flex-col items-center text-black">
-
+    <div className="h-[100vh] w-full overflow-hidden bg-[#dcdcdc] flex flex-col items-center text-black">
       <div className="flex justify-center mt-6">
         <GuidelinesHeader />
       </div>
 
-      <div className="flex justify-center mt-6 max-w-5xl">
+      <div className="flex justify-center mt-6 max-w-5xl px-8">
         <GuidelinesInfo />
       </div>
 
       <div className="flex justify-center mt-6">
         <GuidelinesButton />
       </div>
-
     </div>
   );
 }

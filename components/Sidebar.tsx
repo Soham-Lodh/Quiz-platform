@@ -7,27 +7,27 @@ export default function Sidebar() {
 
   const titles: Record<string, string> = {
     "/judge/team-display": "TEAM CARDS",
-    
     "/round1/judge/teamDetails": "TEAM DETAILS",
     "/round1/judge/leaderboard": "LEADERBOARD",
-    "/round1/judge/login": "VOLUME 1.0",
+    "/round1/judge/login": "QUIZ TIME",
     "/round1/judge/teamDisplay": "TEAM CARDS",
     "/round1/audience/votingPanel": "VOTE 4 UR FAVS",
     "/round1/audience/votingPanel/scores": "TEAM DETAILS",
-    "/round1/audience/leaderboard":"LEADERBOARD",
-    "/round1/player/leaderboard":"LEADERBOARD",
-    "/round1/player/login": "VOLUME 1.0",
-    "/round1/player/panel": "DASHBOARD",
-    "/round1/player/register": "VOLUME 1.0",
+    "/round1/audience/leaderboard": "LEADERBOARD",
+    "/round1/player/leaderboard": "LEADERBOARD",
+    "/round1/player/login": "QUIZ TIME",
+    "/round1/player/panel": "QUIZ TIME",
+    "/round1/player/register": "QUIZ TIME",
     "/round1/player/results/failure": "RESULTS",
     "/round1/player/results/success": "RESULTS",
     "/round2/login": "VOLUME 2.0",
     "/round2/quizGuidelines": "QUIZ TIME",
     "/round2/quizPlatform": "QUIZ TIME",
-    "/": "VOLUME 1.0"
+    "/": "QUIZ TIME"
   };
 
-  const title = titles[pathname] || "DASHBOARD";
+ 
+  const title = titles[pathname] || "QUIZ TIME";
 
   return (
     <aside className="w-60 min-h-[calc(100vh-44px)] flex flex-col shrink-0">
