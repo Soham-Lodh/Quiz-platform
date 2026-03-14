@@ -80,9 +80,9 @@ export default function LoginCard({ bgColour, title, buttonText, buttonColour } 
         style={{ backgroundColor: bgColour }}
       >
 
-        <div className="text-3xl font-bold mb-2 tracking-tighter">{title}</div>
+        <div className="text-3xl font-bold mb-2 tracking-tighter bg-black">{title}</div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 text-black">
 
           <div className="flex flex-col">
             <label className="text-xl tracking-tighter">Email</label>
