@@ -17,8 +17,12 @@ export default function QuizPlatform() {
   const TOTAL_TIME_MINUTES = 20;
   const TOTAL_SECONDS = TOTAL_TIME_MINUTES * 60;
 
+  const QUESTIONS_PER_USER = 20;
+
   const STORAGE_KEY = "round2_quiz_progress";
   const COMPLETED_KEY = "round2_quiz_completed";
+  const TAB_COUNT_KEY = "round2_tab_switch_count";
+  const SELECTED_QUESTIONS_KEY = "round2_selected_questions";
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -27,7 +31,11 @@ export default function QuizPlatform() {
 
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [cheated, setCheated] = useState(false);
-  const [tabChangeCount, setTabChangeCount] = useState(0);
+
+  const [tabChangeCount, setTabChangeCount] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    return Number(localStorage.getItem(TAB_COUNT_KEY) || 0);
+  });
 
   const currentQuestion = questions[currentIndex];
   const isLastQuestion = currentIndex === questions.length - 1;
@@ -39,6 +47,11 @@ export default function QuizPlatform() {
 
     if (!cookie) return null;
     return cookie.split("=")[1];
+  }
+
+  function getRandomQuestions(all: Question[]) {
+    const shuffled = [...all].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, QUESTIONS_PER_USER);
   }
 
   async function reportCheating() {
@@ -121,7 +134,22 @@ export default function QuizPlatform() {
         return;
       }
 
-      setQuestions(data);
+      let selectedQuestions: Question[] = [];
+
+      const savedQuestions = localStorage.getItem(SELECTED_QUESTIONS_KEY);
+
+      if (savedQuestions) {
+        selectedQuestions = JSON.parse(savedQuestions);
+      } else {
+        selectedQuestions = getRandomQuestions(data);
+
+        localStorage.setItem(
+          SELECTED_QUESTIONS_KEY,
+          JSON.stringify(selectedQuestions)
+        );
+      }
+
+      setQuestions(selectedQuestions);
 
       const saved = localStorage.getItem(STORAGE_KEY);
 
@@ -159,9 +187,14 @@ export default function QuizPlatform() {
   */
 
   useEffect(() => {
+    if(quizCompleted) return;
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        setTabChangeCount((prev) => prev + 1);
+        setTabChangeCount((prev) => {
+          const newCount = prev + 1;
+          localStorage.setItem(TAB_COUNT_KEY, newCount.toString());
+          return newCount;
+        });
       }
     };
 
@@ -176,6 +209,7 @@ export default function QuizPlatform() {
   */
 
   useEffect(() => {
+    if(quizCompleted) return;
     if (tabChangeCount === 0) return;
 
     toast.warning(`Tab switched ${tabChangeCount} time(s)`);
@@ -197,6 +231,55 @@ export default function QuizPlatform() {
   }, [tabChangeCount]);
 
   /*
+  DEVTOOLS DETECTION
+  */
+
+  useEffect(() => {
+    const detectDevTools = () => {
+      const threshold = 160;
+
+      if (
+        window.outerWidth - window.innerWidth > threshold ||
+        window.outerHeight - window.innerHeight > threshold
+      ) {
+        toast.error("Developer tools detected. Quiz terminated.");
+
+        reportCheating();
+
+        setCheated(true);
+        setQuizCompleted(true);
+
+        router.replace("/");
+      }
+    };
+
+    const interval = setInterval(detectDevTools, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  /*
+  BLOCK INSPECT SHORTCUTS
+  */
+
+  useEffect(() => {
+    const blockKeys = (e: KeyboardEvent) => {
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && e.key === "I") ||
+        (e.ctrlKey && e.shiftKey && e.key === "J") ||
+        (e.ctrlKey && e.key === "U")
+      ) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener("keydown", blockKeys);
+
+    return () => window.removeEventListener("keydown", blockKeys);
+  }, []);
+
+  /*
   TIMER
   */
 
@@ -210,6 +293,8 @@ export default function QuizPlatform() {
 
           localStorage.setItem(COMPLETED_KEY, "true");
           localStorage.removeItem(STORAGE_KEY);
+          localStorage.removeItem(TAB_COUNT_KEY);
+          localStorage.removeItem(SELECTED_QUESTIONS_KEY);
 
           toast.info("Time is up. Quiz submitted automatically.");
 
@@ -262,6 +347,8 @@ export default function QuizPlatform() {
       if (isLastQuestion) {
         localStorage.setItem(COMPLETED_KEY, "true");
         localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(TAB_COUNT_KEY);
+        localStorage.removeItem(SELECTED_QUESTIONS_KEY);
 
         toast.success("Quiz submitted");
 
@@ -333,7 +420,6 @@ export default function QuizPlatform() {
           {currentQuestion.questionText}
         </p>
 
-        {/* Options */}
         <div className="space-y-4">
           {currentQuestion.options.map((opt, i) => (
             <div
@@ -341,8 +427,8 @@ export default function QuizPlatform() {
               onClick={() => setSelected(i)}
               className={`border-[3px] border-black p-4 cursor-pointer text-black font-medium transition-colors duration-150 ${
                 selected === i
-                  ? "bg-[#00FFA3]" // Neon Green for selected
-                  : "bg-[#e5e5e5] hover:bg-[#d4d4d4]" // Light Grey for unselected
+                  ? "bg-[#00FFA3]"
+                  : "bg-[#e5e5e5] hover:bg-[#d4d4d4]"
               }`}
             >
               <span className="font-bold mr-2">Option {i + 1}</span> — {opt}
@@ -350,7 +436,6 @@ export default function QuizPlatform() {
           ))}
         </div>
 
-        {/* Continue Button */}
         <div className="mt-8 text-center flex justify-center">
           <button
             onClick={handleContinue}
@@ -360,7 +445,6 @@ export default function QuizPlatform() {
           </button>
         </div>
 
-        {/* Timer Section */}
         <div className="mt-12 flex flex-col items-center">
           <div className="bg-black text-white px-6 py-2 inline-block font-bold tracking-widest uppercase text-sm -mb-2 z-10 relative border-2 border-black">
             TIME IS RUNNING OUT!!
