@@ -12,7 +12,7 @@ const spaceGrotesk = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "CN March Event",
+  title: "Quiz Platform",
   description: "Coding Ninjas Event Dashboard",
 };
 
